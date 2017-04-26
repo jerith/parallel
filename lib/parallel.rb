@@ -407,8 +407,7 @@ module Parallel
       worker.stop if worker
 
       # create a new replacement worker
-      running = workers - [worker]
-      workers[i] = worker(job_factory, options.merge(started_workers: running, worker_number: i), &blk)
+      workers[i] = worker(job_factory, options.merge(started_workers: workers, worker_number: i), &blk)
     end
 
     def create_workers(job_factory, options, &block)
@@ -427,7 +426,7 @@ module Parallel
         self.worker_number = options[:worker_number]
 
         begin
-          options.delete(:started_workers).each(&:close_pipes)
+          options.delete(:started_workers).compact.each(&:close_pipes)
 
           parent_write.close
           parent_read.close
