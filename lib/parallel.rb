@@ -407,7 +407,9 @@ module Parallel
       worker.stop if worker
 
       # create a new replacement worker
-      workers[i] = worker(job_factory, options.merge(started_workers: workers, worker_number: i), &blk)
+      options[:mutex].synchronize {
+        workers[i] = worker(job_factory, options.merge(started_workers: workers, worker_number: i), &blk)
+      }
     end
 
     def create_workers(job_factory, options, &block)
